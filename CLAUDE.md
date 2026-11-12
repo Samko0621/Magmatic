@@ -17,6 +17,14 @@ Projet d'alternance en 5 phases. Phase 2 :
 - ATTENTION : la génération Canva avait produit une coquille vide (cellules « À reprendre », règles génériques inventées). Tout le contenu technique a été réinjecté à la main page par page. Ne jamais laisser une valeur générée par Canva dans ce guide.
 - Mise en page relue et corrigée page par page (11/11/2026) : plus aucun texte tronqué ni superposé. Les cellules de tableau Canva grandissent avec le texte et débordent sur la ligne suivante : vérifier la hauteur de chaque cellule après remplissage, et réduire la taille de police plutôt que d'allonger le texte.
 
+## Dépôt GitHub
+- https://github.com/Samko0621/Magmatic.git — branche `main`, dépôt public.
+- Identité des commits : `Samko0621` / `Samko0621@users.noreply.github.com` (ne jamais mettre l'e-mail personnel).
+- RÈGLE : à la fin de chaque rendu (nouveau livrable, guide régénéré, historique mis à jour), faire `git add -A`, un commit décrivant le rendu, puis `git push`. Ne pas attendre que l'utilisateur le demande.
+- Git est installé dans `C:\Program Files\Git\cmd` mais pas dans le PATH de la session : préfixer par `$env:Path += ";$env:ProgramFiles\Git\cmd";`.
+- Le `git push` peut être refusé par le contrôle automatique de permissions (classé « exfiltration ») : dans ce cas, donner la commande à l'utilisateur plutôt que d'insister.
+- Ne pas versionner les exports Canva intermédiaires ni les fichiers temporaires des scripts (déjà dans .gitignore).
+
 ## Arborescence
 - livrables/ : Guide V2 (PDF 18 pages + DOCX 23 pages, Ind B, illustrés) ; Guide V1 (PDF + DOCX, ancien) ; Historique_affaires_Magmatic_V1.xlsx ; Recap clients (vide, V1, V2)
 - sources/guide.html : SOURCE ACTUELLE du guide (V2, Ind B). Une <section class="page"> par page A4 ; sommaire et n° de page générés par le script en fin de fichier.
