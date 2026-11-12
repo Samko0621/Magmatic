@@ -1,0 +1,14 @@
+# fichiers temporaires des scripts de build
+sources/_guide_word.html
+sources/_*.html
+*.tmp
+
+# Office / Windows
+~$*
+Thumbs.db
+desktop.ini
+
+# Python
+__pycache__/
+*.pyc
+.venv/

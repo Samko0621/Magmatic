@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<title>Magmatic - Principes généraux et règles de conception - Ind B</title>
+<style>
+@page{size:A4;margin:0}
+*{box-sizing:border-box}
+html,body{margin:0;background:#888}
+body{font-family:Arial,Helvetica,sans-serif;color:#333;font-size:9.8pt;line-height:1.36}
+.page{width:210mm;height:297mm;padding:17mm 16mm 20mm 16mm;page-break-after:always;position:relative;overflow:hidden;background:#fff;margin:0 auto}
+.page:last-child{page-break-after:auto}
+@media screen{.page{margin:6mm auto}}
+.top{position:absolute;top:0;left:70mm;right:16mm;height:5mm;background:#4f81bd}
+.bot{position:absolute;bottom:0;left:70mm;right:16mm;height:6mm;background:#c0504d}
+.foot{position:absolute;bottom:9mm;left:16mm;right:16mm;font-size:8pt;color:#777;display:flex;justify-content:space-between}
+.banner{background:#6d6d6d;color:#fff;font-weight:bold;text-transform:uppercase;font-size:16pt;padding:3mm 5mm 3mm 16mm;margin:0 -16mm 5mm -16mm;letter-spacing:.2px}
+h2{color:#d9232d;font-size:13pt;margin:4mm 0 2mm 0;font-weight:bold}
+h2:first-child{margin-top:0}
+h3{color:#555;font-size:10.6pt;margin:3mm 0 1.2mm 0}
+p{margin:0 0 2.2mm 0}
+table{border-collapse:collapse;width:100%;margin:1.5mm 0 3mm 0;font-size:8.8pt}
+th{background:#6d6d6d;color:#fff;text-align:left;padding:1.3mm 2.2mm;font-weight:bold}
+td{padding:1.2mm 2.2mm;border-bottom:1px solid #bbb;vertical-align:top}
+tr:nth-child(even) td{background:#f3f3f3}
+.tag{display:inline-block;font-size:7.2pt;font-weight:bold;padding:.3mm 1.7mm;border-radius:2mm;color:#fff;white-space:nowrap;vertical-align:middle}
+.tag.c{background:#2e7d32}.tag.d{background:#e08a00}.tag.a{background:#fff;color:#c62828;border:1px solid #c62828}
+.todo{border:1.4px dashed #c62828;background:#fff5f5;color:#8a1c1c;padding:1.8mm 3mm;margin:1.5mm 0 3mm 0;font-size:8.8pt}
+.rule{border-left:1.2mm solid #d9232d;background:#f6f6f6;padding:1.8mm 3mm;margin:1.5mm 0 3mm 0}
+.warn{color:#d9232d;font-weight:bold;font-size:12pt;text-align:center;margin-top:8mm;line-height:1.35}
+.toc{margin:4mm 0 0 55mm}
+.toc div{display:flex;justify-content:space-between;color:#555;font-size:11pt;margin:0 0 3mm 0;text-decoration:underline}
+.toc div.l2{font-size:9.4pt;margin:0 0 1.3mm 6mm;text-decoration:none;color:#666}
+.cover h1{color:#e31e24;font-size:38pt;margin:22mm 0 0 62mm;line-height:1.05}
+.cover .s1{color:#e31e24;font-size:21pt;font-style:italic;margin:5mm 0 0 62mm}
+.cover .s2{color:#e31e24;font-size:20pt;font-weight:bold;margin:12mm 0 0 62mm;line-height:1.2}
+.cover .ref{color:#666;font-size:17pt;font-weight:bold;margin:10mm 0 0 62mm}
+.cover img{position:absolute;left:8mm;bottom:22mm;height:150mm;opacity:.95}
+.cover .cap{position:absolute;left:8mm;bottom:15mm;font-size:8pt;color:#777}
+figure{margin:1.5mm 0 3mm 0;text-align:center}
+figure img{max-width:100%;border:1px solid #bbb}
+figcaption{font-size:8pt;color:#666;margin-top:1mm;font-style:italic}
+.cols{display:flex;gap:5mm;align-items:flex-start}
+.cols>*{flex:1;min-width:0}
+ul{margin:0 0 2.5mm 4mm;padding-left:4mm}li{margin-bottom:.8mm}
+.legend{font-size:8.4pt;color:#555;margin:0 0 2.5mm 0}
+.k{font-family:Consolas,monospace;background:#eee;padding:0 1mm;font-size:8.8pt}
+.tree{margin:1.5mm 0 2.5mm 0}
+.trow{display:flex;gap:2.5mm;margin-bottom:1.6mm;align-items:stretch}
+.tp{width:32mm;flex:none;background:#2f4a6d;color:#fff;padding:1.2mm 2mm;font-size:8.2pt;display:flex;flex-direction:column;justify-content:center}
+.tp small{opacity:.8;font-size:7.2pt}.tp i{font-size:7.8pt}
+.tc{display:flex;flex-wrap:wrap;gap:1.2mm;flex:1}
+.ch{background:#dff1f7;border:1px solid #7fb8cf;padding:.8mm 1.6mm;font-size:7.5pt;line-height:1.22;min-width:23mm}
+.ch small{display:block;color:#33607a;font-size:6.8pt}.ch i{display:block;font-size:7.1pt;color:#333}
+.over{outline:3px solid magenta}
+</style></head><body>
+
+<!-- ============ COUVERTURE ============ -->
+<section class="page cover" data-nofoot>
+<h1>MAGMATIC</h1>
+<div class="s1">Stockage automatisé de palettes</div>
+<div class="s2">Principes généraux<br>et règles de conception</div>
+<div class="ref">Réf. à attribuer (format BEEM)&nbsp; Ind B</div>
+<img src="figures/cage_elevation.png" alt="">
+<div class="cap">Cage Levmatic : élévations du plan E0398MAG005 (Levmatic 6, Londres).</div>
+</section>
+
+<!-- ============ SOMMAIRE ============ -->
+<section class="page">
+<div class="banner">MAGMATIC</div>
+<div class="toc" id="toc"></div>
+<div class="warn">Les cas non décrits dans ce document, ou qui ne respectent pas ces règles, seront soumis à la validation du bureau d'études.</div>
+</section>
+
+<!-- ============ 1 HISTORIQUE ============ -->
+<section class="page">
+<div class="banner" data-toc="1">1. Historique des modifications</div>
+<table><tr><th style="width:15mm">Version</th><th style="width:22mm">Date</th><th style="width:24mm">Auteur</th><th>Modifications</th></tr>
+<tr><td><b>A</b></td><td>10/11/2026</td><td>MIHCI S.</td><td>Création du document (brouillon V1) : données d'entrée et nomenclature de lancement d'une cage Levmatic, règles déduites de l'historique des affaires P&amp;G, nommage BEEM.</td></tr>
+<tr><td><b>B</b></td><td>11/11/2026</td><td>MIHCI S.</td><td>Refonte complète (V2) : ajout des illustrations (plans d'implantation, plan de cage, classeur de lancement, serveur et PDM), chapitre « Présentation du système », règles de pas d'étage et d'alvéole lues sur plan, interface nacelle / rayonnage / convoyeur, règles de mise en plan BEMI, arborescence des dossiers.</td></tr></table>
+
+<h2>Niveau de confiance des règles</h2>
+<table><tr><th style="width:26mm">Repère</th><th>Signification</th></tr>
+<tr><td><span class="tag c">Confirmé</span></td><td>Information lue telle quelle dans une source écrite (plan, classeur, tableau, nom de fichier).</td></tr>
+<tr><td><span class="tag d">Déduit</span></td><td>Tendance ou interprétation tirée des sources. À valider par le tuteur avant application.</td></tr>
+<tr><td><span class="tag a">À compléter</span></td><td>Information absente des sources disponibles.</td></tr></table>
+
+<h2>Sources utilisées</h2>
+<table><tr><th>Source</th><th>Apport</th></tr>
+<tr><td>Classeur de lancement EHP01718LEVM001 « Création cage Levmatic NEXT EXPANSION » (Magmatic 2A)</td><td>Données d'entrée, contrepoids, organigramme de lancement, calculs de géométrie</td></tr>
+<tr><td>Plan E0398MAG005 « Levmatic 6 Scaffolding » (A0, 1:50, ind A)</td><td>Vue d'ensemble d'une cage, environnement de montage</td></tr>
+<tr><td>Plans d'implantation AutoCAD d'un site (4 niveaux de bâtiment, 3 coupes, détails)</td><td>Lecture d'une implantation, alvéole, pas d'étage, interface nacelle</td></tr>
+<tr><td>Bilan affaire P&amp;G (120 affaires, 5 sites), onglets « Moteurs Conv Lev » et « Suivi voies de roulement »</td><td>Historique des évolutions, convoyeurs de cage, voies de roulement</td></tr>
+<tr><td>Récapitulatif clients Magmatic</td><td>Types de Magmatic, hauteurs, niveaux, parc VM / LEV</td></tr>
+<tr><td>Classeur « BEEM - Nommage des documents »</td><td>Codification des plans et documents</td></tr>
+<tr><td>Présentation « Uniformisation des plans implantation BEMI » (16/08/2023)</td><td>Règles de mise en plan SolidWorks + PDM</td></tr>
+<tr><td>Serveur N:\BEMI\Espacebm et coffre PDM</td><td>Emplacement des dossiers, codification des articles</td></tr>
+<tr><td>Guide Intelis Convey ST1100-10-00009 Ind M</td><td>Modèle de structure uniquement : ses valeurs ne s'appliquent pas à Magmatic</td></tr></table>
+</section>
+
+<!-- ============ 2 PRESENTATION ============ -->
+<section class="page">
+<div class="banner" data-toc="2">2. Présentation du système Magmatic</div>
+<p>Magmatic est un système de stockage automatisé de palettes. Des véhicules motorisés circulent dans les allées du rayonnage, à chaque niveau. Des élévateurs, les Levmatic, les transfèrent d'un niveau à l'autre et font la liaison avec les convoyeurs. <span class="tag d">Déduit</span></p>
+<h2>Vocabulaire</h2>
+<table><tr><th style="width:30mm">Terme</th><th>Définition</th><th style="width:22mm">Niveau</th></tr>
+<tr><td><b>Levmatic (LEV)</b></td><td>Élévateur Magmatic. Code produit BEEM : ALV « armoire élévateur Levmatic ». Code composant de la cage : 081000.</td><td><span class="tag c">Confirmé</span></td></tr>
+<tr><td><b>VM</b></td><td>Véhicule motorisé Magmatic (code produit VMA).</td><td><span class="tag c">Confirmé</span></td></tr>
+<tr><td><b>MAP</b></td><td>Mât à palette (dossier « MAT A PALETTE », code AMA « armoire mât à palette »).</td><td><span class="tag d">Déduit</span></td></tr>
+<tr><td><b>Cage</b></td><td>Structure verticale du Levmatic : charpente, cadre de réa, crémaillères, butées, contrepoids.</td><td><span class="tag c">Confirmé</span></td></tr>
+<tr><td><b>Nacelle</b></td><td>Partie mobile du Levmatic qui porte la charge (réf. 010358, nacelle AS12).</td><td><span class="tag c">Confirmé</span></td></tr>
+<tr><td><b>Réa / CP</b></td><td>Poulie de renvoi des câbles de levage / contrepoids (béton ou acier).</td><td><span class="tag c">Confirmé</span></td></tr>
+<tr><td><b>CPC</b></td><td>Chaîne porte-câbles.</td><td><span class="tag c">Confirmé</span></td></tr>
+<tr><td><b>TOR</b></td><td>Niveau d'appui de la palette sur un plan (TOR 450 sur convoyeur, TOR 300 en rayonnage). Sens exact du sigle à confirmer.</td><td><span class="tag d">Déduit</span></td></tr>
+<tr><td><b>Type 2A, 2C…</b></td><td>Génération ou variante de Magmatic (colonne « Type Magmatic » du récapitulatif clients).</td><td><span class="tag a">À compléter</span></td></tr></table>
+
+<h2>Parc installé</h2>
+<p>Le récapitulatif clients recense les sites, leurs extensions et leur parc. Ordres de grandeur relevés : <span class="tag c">Confirmé</span></p>
+<ul><li>Types : 2A en majorité, puis 2C, 2 et 1 ; variantes « 2C à MAP » et « 2A double profondeur ».</li>
+<li>Nombre de niveaux : de 2 à 14. Hauteur de stockage : de 5,4 m à 34 m environ.</li>
+<li>Fabricants de palettier : Travhydro, Galler, Storax Greich, ACMD, Vogelnoot, Mecalux, Nedcon, Stow, Eurostock, Torri.</li>
+<li>Exemple Next (Angleterre, 2007) : 10 niveaux, 112 000 places, 14 VM + 6 LEV, puis extension de 6 VM en 2019.</li></ul>
+<figure><img src="figures/recap_clients.png" style="max-height:62mm"><figcaption>Récapitulatif clients Magmatic : une ligne par site ou extension.</figcaption></figure>
+<div class="todo"><b>À compléter</b> : définition des types 1, 2, 2A et 2C, et ce qui les distingue en conception (charge, vitesse, gabarit).</div>
+</section>
+
+<!-- ============ 3 DONNEES GENERALES ============ -->
+<section class="page">
+<div class="banner" data-toc="3">3. Données générales et charges admissibles</div>
+<h2 data-toc2="3.1">3.1 Palette, alvéole et pas d'étage</h2>
+<div class="cols">
+<div>
+<p>Le détail « Pallets in a bay » du plan d'implantation donne la géométrie d'une alvéole : <span class="tag c">Confirmé</span></p>
+<table><tr><th>Grandeur</th><th>Valeur</th></tr>
+<tr><td>Palettes par alvéole</td><td>2</td></tr>
+<tr><td>Largeur de palette (face)</td><td>1 200 mm</td></tr>
+<tr><td>Hauteur de charge</td><td>1 500 mm</td></tr>
+<tr><td>Lisse + jeu au-dessus de la charge</td><td>350 mm</td></tr>
+<tr><td><b>Pas d'étage</b></td><td><b>1 850 mm</b> (1 500 + 350)</td></tr>
+<tr><td>Jeu entre palettes</td><td>60 mm</td></tr>
+<tr><td>Jeu palette / montant</td><td>100 mm</td></tr>
+<tr><td>Largeur d'alvéole</td><td>2 660 mm</td></tr></table>
+<div class="rule"><b>Règle :</b> pas d'étage = hauteur de charge maxi + 350 mm. Cette valeur est reprise par l'automate (registre « pas d'étage 1850 »). <span class="tag d">Déduit</span></div>
+<p>La coupe « Y Way View » donne les cotes transversales : charges de 1 400 mm sur palettes de 1 000 mm, passage central de 1 500 mm, entraxes 2 550 et 1 956 mm. Le modèle CAO du site NEXT s'appelle « Palette pleine NEXT 1400x1200x1500 ». <span class="tag c">Confirmé</span></p>
+</div>
+<figure style="flex:0 0 62mm"><img src="figures/alveole.png" style="max-height:112mm"><figcaption>Coupe sens Y et détail d'une alvéole (éch. 1/50).</figcaption></figure>
+</div>
+<div class="todo"><b>À valider</b> : le classeur de lancement indique un débordement de charge de 2 × 100 mm « sens 1200 », alors que la coupe montre 1 400 mm de charge sur une palette de 1 000 mm. Le tableau palettier note aussi des hauteurs 1500 / 1800 : préciser le pas d'étage pour une charge de 1 800 mm.</div>
+
+<h2 data-toc2="3.2">3.2 Charges</h2>
+<table><tr><th>Donnée</th><th>Valeur (cage NEXT)</th><th style="width:22mm">Niveau</th></tr>
+<tr><td>Poids maxi d'une palette</td><td>1 000 kg</td><td><span class="tag c">Confirmé</span></td></tr>
+<tr><td>Poids d'un VM</td><td>1 550 kg</td><td><span class="tag c">Confirmé</span></td></tr>
+<tr><td>Poids du Levmatic (nacelle)</td><td>1 960 kg dans « CP et organigramme » ; 1 500 kg dans « Données Palettier »</td><td><span class="tag a">À valider</span></td></tr></table>
+<h2 data-toc2="3.3">3.3 Types de palettes et déformations admissibles</h2>
+<div class="todo"><b>À compléter</b> : formats de palette admis (dimensions mini et maxi, matériau), tolérances de déformation et de débord. Aucune source ne les donne ; le guide Intelis a un chapitre équivalent pour les colis et les bacs.</div>
+</section>
+
+<!-- ============ 3.4 DONNEES D'ENTREE ============ -->
+<section class="page">
+<h2 data-toc2="3.4">3.4 Données d'entrée d'une cage Levmatic</h2>
+<p>Toute cage commence par l'onglet de données du classeur de lancement. Les cases <b>vertes</b> sont les variables à saisir, les <b>bleues</b> des données fixes, les <b>jaunes</b> des calculs. <span class="tag c">Confirmé</span></p>
+<div class="cols">
+<figure style="flex:0 0 96mm"><img src="figures/donnees_entree.png"><figcaption>Classeur EHP01718LEVM001 : données d'entrée et début de l'organigramme.</figcaption></figure>
+<div>
+<table><tr><th>Donnée</th><th>NEXT</th></tr>
+<tr><td>Type de Magmatic</td><td>2A</td></tr>
+<tr><td>Ambiance</td><td>Chaud</td></tr>
+<tr><td>Débordement de charge, sens 1200</td><td>2 × 100 mm</td></tr>
+<tr><td>Nombre d'étages</td><td>10</td></tr>
+<tr><td>Niveaux de convoyeurs</td><td>2</td></tr>
+<tr><td>Nombre de Levmatic</td><td>2</td></tr>
+<tr><td>Cages optionnelles</td><td>0</td></tr></table>
+</div></div>
+<p class="legend">Ces valeurs sont celles de l'affaire EHP01718 (Levmatic 6 et 8 du site NEXT, code FLEVE). Une autre cage aura d'autres valeurs. La table du classeur associe « chaud » à 2×25 et « froid » à 2×50. <span class="tag c">Confirmé</span></p>
+
+<h2 data-toc2="3.5">3.5 Contrepoids</h2>
+<table><tr><th>Donnée</th><th>Valeur (NEXT)</th><th style="width:22mm">Niveau</th></tr>
+<tr><td>Contrepoids béton</td><td>4 CP ; poids par CP 808,75 kg ; accrochage 28 kg ; 3 lests standard de 188 kg</td><td><span class="tag c">Confirmé</span></td></tr>
+<tr><td>Références de lest béton</td><td>705719 (650×650×200, 188 kg) ; 705833 (650×650×110, 103,5 kg) ; 705834 (84,5 kg)</td><td><span class="tag c">Confirmé</span></td></tr>
+<tr><td>Choix des lests</td><td>3 × 705719 + 1 × 705834 par contrepoids</td><td><span class="tag c">Confirmé</span></td></tr>
+<tr><td>Déséquilibre après choix</td><td>9,75 kg (reste à équilibrer avant choix : 216,75 kg)</td><td><span class="tag c">Confirmé</span></td></tr>
+<tr><td>Contrepoids acier</td><td>4 CP ; cadre 143 kg ; lest 7,8 kg ; 86 lests standard par CP (344 pour 4 CP)</td><td><span class="tag c">Confirmé</span></td></tr></table>
+<div class="rule"><b>Principe de calcul :</b> le poids par contrepoids se déduit des poids du Levmatic, du VM et de la palette. On choisit ensuite la combinaison de lests standard qui laisse le plus petit déséquilibre. <span class="tag d">Déduit</span></div>
+<div class="todo"><b>À compléter</b> : formule exacte du poids par CP, règle de choix entre béton et acier, déséquilibre admissible. Dans l'onglet « CP et organigramme », le calcul des contrepoids acier affiche #NAME? : à corriger avec le tuteur.</div>
+<div class="todo"><b>À valider</b> : sens de « chaud / froid » (ambiance du site) et des valeurs 2×25 / 2×50 associées.</div>
+</section>
+
+<!-- ============ 4 FAQ ============ -->
+<section class="page">
+<div class="banner" data-toc="4">4. Règles générales : FAQ</div>
+<h2 data-toc2="4.1">Comment lire une implantation Magmatic ?</h2>
+<p>Un fichier d'implantation contient une vue en plan par niveau de bâtiment (Ground, First, Second, Third floor), trois coupes et des détails. <span class="tag c">Confirmé</span></p>
+<figure><img src="figures/implant_first.png" style="max-height:84mm"><figcaption>Plan « First floor » : rayonnage (vert), allées 1 à 54, convoyeurs le long du rayonnage (flux « B » et « C »).</figcaption></figure>
+<ul><li>Le rayonnage est le grand bloc vert. Les <b>allées sont numérotées de 1 à 54</b> sur son bord gauche. <span class="tag c">Confirmé</span></li>
+<li>Les convoyeurs d'entrée et de sortie longent le bas du rayonnage. Les Levmatic se trouvent sur cette ligne. <span class="tag c">Confirmé</span></li>
+<li>Les files de poteaux du bâtiment sont repérées par des bulles (chiffres dans un sens, lettres dans l'autre). <span class="tag c">Confirmé</span></li>
+<li>Un système de navettes « X-PTS » occupe le bâtiment voisin, à droite. <span class="tag c">Confirmé</span></li>
+<li>Le cercle en haut à gauche du bâtiment marque le point d'origine du plan. <span class="tag d">Déduit</span></li></ul>
+<h3>Les trois coupes</h3>
+<figure><img src="figures/implant_coupes.png" style="max-height:64mm"><figcaption>Élévation du rayonnage (niveaux 1 à 10), « Magmatic platforms » (axes Lev 1 à Lev 9, élévateurs E4 et E5), « Opening in Z axis » (trémies).</figcaption></figure>
+<div class="todo"><b>À compléter</b> : signification des calques et couleurs AutoCAD, contenu du cartouche, sens de numérotation des allées. À décrire avec le tuteur sur un plan réel.</div>
+</section>
+
+<section class="page">
+<h2 data-toc2="4.2">Comment identifier un Levmatic ou un VM sur un site ?</h2>
+<ul><li>Sur les coupes, chaque Levmatic a son axe nommé « Lev n Axis ». <span class="tag c">Confirmé</span></li>
+<li>Deux conventions coexistent : chiffres (Lev 1 à 14 à Londres) ou lettres (Lev A à K à Amiens). <span class="tag c">Confirmé</span></li>
+<li>Les VM sont numérotés en continu sur un site : une extension prend la suite (Euskirchen : VM 22 à 27 pour l'affaire BG018). <span class="tag c">Confirmé</span></li></ul>
+<div class="rule"><b>Règle proposée :</b> une extension reprend la convention du site et continue la numérotation existante. <span class="tag d">Déduit</span></div>
+
+<h2 data-toc2="4.3">Que signifient les symboles du plan ?</h2>
+<div class="cols">
+<figure style="flex:0 0 88mm"><img src="figures/legende_plan.png"><figcaption>Légende d'un plan d'implantation (allemand / anglais).</figcaption></figure>
+<div>
+<table><tr><th>Symbole</th><th>Signification</th></tr>
+<tr><td>Flèche rouge</td><td>Convoyeur à 0,2 m/s</td></tr>
+<tr><td>Flèche bleue</td><td>Convoyeur à 0,3 m/s</td></tr>
+<tr><td>Flèche verte</td><td>Convoyeur à 0,45 m/s</td></tr>
+<tr><td>Flèche jaune courbe</td><td>Table tournante régulée (90° en 4,5 s)</td></tr>
+<tr><td>Trait bleu</td><td>Butée fixe, non franchissable</td></tr>
+<tr><td>Butée 3 positions</td><td>Actionnée par le levage, franchissable des deux côtés</td></tr>
+<tr><td>Butée franchissable</td><td>Passage dans un seul sens, rappel par gravité</td></tr>
+<tr><td>Butée motorisée</td><td>Commandée par moteur</td></tr>
+<tr><td>Trait bleu épais</td><td>Antichute</td></tr></table>
+<p class="legend">Les flèches donnent le sens de convoyage, pas le sens de rotation des moteurs. Le moteur de levage ne doit pas être réversible. <span class="tag c">Confirmé</span></p>
+</div></div>
+
+<h2 data-toc2="4.4">Où retrouver les plans d'une affaire ?</h2>
+<div class="cols">
+<div>
+<table><tr><th>Emplacement</th><th>Contenu</th></tr>
+<tr><td class="k">N:\BEMI\Espacebm\Affaires</td><td>Un dossier par client ou extension</td></tr>
+<tr><td class="k">…\Code composant\081000</td><td>Cages Levmatic : un dossier par site ou par Levmatic</td></tr>
+<tr><td class="k">…\Codification</td><td>Classeurs d'attribution des codes articles</td></tr>
+<tr><td class="k">…\STD_BE</td><td>Standards BE : LEV, MAT, VM, SW</td></tr>
+<tr><td class="k">COFFRE PDM\6-LAYOUTS</td><td>Plans d'implantation SolidWorks, par client et n° d'affaire</td></tr></table>
+<p>Les fichiers d'une cage se nomment <span class="k">code composant - n° d'affaire - désignation</span>, par exemple « 081000-EHP01718 LEVMATIC NEXT 6 ET 8 ». <span class="tag c">Confirmé</span></p>
+<p>Sur le Bilan P&amp;G, 105 affaires sur 120 n'ont pas de plan d'ensemble renseigné. Le fichier « Historique des affaires Magmatic » sert de point d'entrée : n° d'origine, n° BEEM, emplacement des plans. <span class="tag c">Confirmé</span></p>
+</div>
+<figure style="flex:0 0 70mm"><img src="figures/serveur_081000.png" style="max-height:84mm"><figcaption>Dossier 081000 : une cage par site.</figcaption></figure>
+</div>
+</section>
+
+<section class="page">
+<h2 data-toc2="4.5">Comment sont codifiés les articles ?</h2>
+<div class="cols">
+<div>
+<p>Le dossier « Codification » contient un classeur par plage de codes à 6 chiffres. <span class="tag c">Confirmé</span></p>
+<table><tr><th style="width:24mm">Plage</th><th>Nature</th><th>Exemples du guide</th></tr>
+<tr><td>000000</td><td>Sous-ensembles (S/Ens)</td><td>002531, 001089, 002886</td></tr>
+<tr><td>010000, 080000</td><td>Ensembles et composants</td><td>010270 charpente, 080143 Levmatic</td></tr>
+<tr><td>600000</td><td>Entretoises, poulies, roues ; 609600 : pièces sur plan rack</td><td>609509 cadre réa</td></tr>
+<tr><td>700000</td><td>Pièces sur plan</td><td>705719 lest béton, 710241 crémaillère</td></tr>
+<tr><td>800000</td><td>Outillage sur plan</td><td></td></tr>
+<tr><td>A00000</td><td>Plans de principe</td><td>A00622 cage Levmatic NEXL1</td></tr></table>
+<p class="legend">La nature des plages 010000 et 080000 est déduite des références du classeur de lancement. <span class="tag d">Déduit</span></p>
+</div>
+<figure style="flex:0 0 66mm"><img src="figures/serveur_codif.png"><figcaption>Classeurs de codification.</figcaption></figure>
+</div>
+<h2 data-toc2="4.6">Où en est le PDM ?</h2>
+<div class="cols">
+<figure style="flex:0 0 46mm"><img src="figures/pdm_coffre.png"><figcaption>Racine du coffre PDM.</figcaption></figure>
+<div>
+<p>Le coffre PDM (<span class="k">C:\VueLocalePDM\COFFRE PDM</span>) contient les produits Intelis en « Light 3D », avec une carte de données par fichier : code PDM, code article, désignations FR et EN, état. <span class="tag c">Confirmé</span></p>
+<p>Les Levmatic et les VM sont encore sur le serveur N:. Leur intégration au PDM est prévue en phase 4 du plan d'action : fonds de plan, cohérence matière / traitement / code article, lien avec la base IFS. <span class="tag c">Confirmé</span></p>
+<p>Le dossier « Smarteam » du serveur date de 2000-2001 : ancien outil de gestion, plus utilisé. <span class="tag d">Déduit</span></p>
+</div></div>
+<figure><img src="figures/serveur_next.png" style="max-height:90mm"><figcaption>Dossier …\081000\NEXT : assemblages, plans et pièces de la cage, anciens (NEXL1, 2006) et nouveaux (EHP01718).</figcaption></figure>
+</section>
+
+<!-- ============ 5 REGLES DE CONCEPTION ============ -->
+<section class="page">
+<div class="banner" data-toc="5">5. Règles de conception</div>
+<h2 data-toc2="5.1">5.1 Cage Levmatic : vue d'ensemble</h2>
+<figure><img src="figures/cage_plan.png" style="max-height:118mm"><figcaption>Plan E0398MAG005 « Levmatic 6 Scaffolding » : trois élévations de la cage, sections A-A et B-B.</figcaption></figure>
+<p>Ce plan montre une cage complète et son environnement de montage. À retenir pour la conception : <span class="tag c">Confirmé</span></p>
+<ul><li>Une <b>poutre de levage</b> en tête de cage (« beam to attach hoist ») sert à monter les éléments.</li>
+<li>Une <b>plateforme haute</b> donne accès au cadre de réa ; une seconde plateforme donne accès au support de chaîne porte-câbles, à mi-hauteur.</li>
+<li>Une <b>zone libre au sol</b> est réservée pour lever les pièces (« free area to lift parts »).</li>
+<li>La zone en tête de cage doit être dégagée au plus tôt pour que les VM puissent circuler sur la voie X.</li>
+<li>Deux échafaudages séparés : un dans la fosse du Levmatic, retiré quand la plateforme haute est posée ; un pour le support de chaîne, retiré quand le Levmatic est raccordé.</li></ul>
+<div class="rule"><b>Règle proposée :</b> prévoir dès la conception de la cage les accès de montage et de maintenance : point de levage en tête, accès au cadre de réa, accès au support de chaîne porte-câbles, zone de levage au sol. <span class="tag d">Déduit</span></div>
+<div class="todo"><b>À compléter</b> : implantation des Levmatic dans le rayonnage (position par rapport aux allées, profondeur de fosse, réservations dans les planchers). Les coupes « Magmatic platforms » et « Opening in Z axis » sont le point de départ.</div>
+</section>
+
+<section class="page">
+<h2 data-toc2="5.2">5.2 Cage Levmatic : nomenclature de lancement</h2>
+<p>Le classeur calcule la quantité de chaque ensemble à partir des données d'entrée. Chaque bloc surmonté d'une étiquette jaune « LANCEMENT » est lancé séparément. <span class="tag c">Confirmé</span></p>
+<figure><img src="figures/organigramme.png"><figcaption>Organigramme de lancement du classeur EHP01718LEVM001.</figcaption></figure>
+<p>Quantités pour <b>2 Levmatic</b>, 10 étages, 2 niveaux de convoyeurs (cage NEXT) :</p>
+<div class="tree">
+<div class="trow"><div class="tp"><small>010270</small><b>Charpente</b><i>× 2</i></div><div class="tc"><div class="ch"><small>609509</small>Cadre réa lev<i>× 4</i></div><div class="ch"><small>609458</small>U support crémaillères<i>× 20</i></div><div class="ch"><small>609457</small>Cadre inf. crémaillère<i>× 2</i></div></div></div>
+<div class="trow"><div class="tp"><small>002531</small><b>Équipement cage 1</b><i>× 2</i></div><div class="tc"><div class="ch"><small>001972</small>S/ens réa<i>× 4</i></div><div class="ch"><small>002886</small>S/ens contrepoids<i>× 4</i></div><div class="ch"><small>705719</small>Lest béton 188 kg<i>× 3</i></div><div class="ch"><small>705834</small>Lest béton 84 kg<i>× 1</i></div></div></div>
+<div class="trow"><div class="tp"><small>001089</small><b>Crémaillères</b><i>× 2</i></div><div class="tc"><div class="ch"><small>001217</small>S/ens crémaillères<i>× 4</i></div><div class="ch"><small>000284</small>Tendeur de crémaillère<i>× 4</i></div><div class="ch"><small>002523</small>Chape supérieure<i>× 4</i></div><div class="ch"><small>002154</small>Accessoire support<i>× 10</i></div><div class="ch"><small>002793</small>Partie fixe<i>× 1</i></div><div class="ch"><small>002025</small>Butée escamotable<i>× 10</i></div><div class="ch"><small>002719</small>Fixation cadre inf. (chevilles chimiques)<i>× 1</i></div></div></div>
+<div class="trow"><div class="tp"><small>080143</small><b>Levmatic</b><i>× 2</i></div><div class="tc"><div class="ch"><small>010358</small>Nacelle AS12<i>× 1</i></div><div class="ch"><small>002534</small>S/ens chaîne porte-câbles<i>× 1</i></div><div class="ch"><small>002535</small>Chaîne porte-câbles<i>× 1</i></div><div class="ch"><small>002545</small>Capteurs à monter sur site<i>× 1</i></div><div class="ch"><small>002900</small>Réflecteur nacelle-palettier<i>× 9</i></div><div class="ch"><small>002724</small>Réflecteur contrôle vitesse<i>× 2</i></div><div class="ch"><small>002727</small>Init Levmatic<i>× 1</i></div><div class="ch"><small>001982</small>Barrage entrée nacelle<i>× 1</i></div></div></div>
+<div class="trow"><div class="tp"><small>002532</small><b>Équipement cage 2</b><i>× 2</i></div><div class="tc"><div class="ch"><small>002784</small>Butée méca. haute<i>× 4</i></div><div class="ch"><small>002806</small>Butée méca. basse<i>× 4</i></div><div class="ch"><small>000951</small>Came hors zone<i>× 1</i></div><div class="ch"><small>002324</small>Embase câble de guidage<i>× 4</i></div><div class="ch"><small>002903</small>Accrochage câbles<i>× 8</i></div><div class="ch"><small>002807</small>Élingue de guidage (modèle 612123)<i>× 1</i></div></div></div>
+<div class="trow"><div class="tp"><small>002533</small><b>Équipement cage 3</b><i>× 2</i></div><div class="tc"><div class="ch"><small>002796</small>Accrochage câble CP<i>× 4</i></div><div class="ch"><small>002808</small>Élingue de CP (modèle 612122)<i>× 4</i></div></div></div>
+</div>
+<p class="legend">Les quantités liées à la hauteur (U supports, butées escamotables, accessoires supports, réflecteurs nacelle-palettier) changent avec le nombre d'étages. Les élingues sont créées à partir des modèles 612122 et 612123, avec la longueur calculée au § 5.3. <span class="tag d">Déduit</span></p>
+<div class="todo"><b>À valider</b> : liste exacte des quantités qui dépendent du site (hauteur, nombre d'étages, niveaux de convoyeurs) et de celles qui sont fixes.</div>
+</section>
+
+<section class="page">
+<h2 data-toc2="5.3">5.3 Cage Levmatic : calculs de géométrie</h2>
+<p>Le classeur enchaîne cinq onglets de calcul à partir des données d'entrée. Valeurs de l'exemple NEXT (chaud, 10 étages, charge de 1 500 mm). <span class="tag c">Confirmé</span></p>
+<h3>Hauteur du cadre de réa</h3>
+<table><tr><th>Grandeur</th><th>Règle (classeur)</th><th style="width:30mm">NEXT</th></tr>
+<tr><td>Fond de fosse → dessous toit</td><td>dernier niveau de pose + 1993 + 1100 + profondeur de fosse</td><td>21 743 mm</td></tr>
+<tr><td><b>Fond de fosse → dessous cadre réa</b></td><td>profondeur de fosse + dernier niveau de pose + 1993</td><td><b>20 643 mm</b></td></tr>
+<tr><td>Surcourse haute + basse du Levmatic</td><td>600 + 600</td><td>1 200 mm</td></tr>
+<tr><td>Hauteur sous cadre pour VM (batterie en haut)</td><td>VM chaud 1920 / froid 1750 + jeu 50 + surcourse / 2 − 165</td><td>2 470 mm</td></tr></table>
+<h3>Longueur des câbles (modèles 612122 et 612123)</h3>
+<table><tr><th style="width:28mm">Câble</th><th>Règle</th><th style="width:34mm">NEXT</th></tr>
+<tr><td>Câble de levage</td><td>(H axe réa − H plan de roulement − H1 attache − surcourse haute) + π·D/2 + (25 + traverse 300 + jeu cadre / CP) + course (nominale + 2 surcourses) + 900 (boîte à coin), arrondi à la centaine supérieure</td><td><b>21 900 mm</b><br>(21 872 avant arrondi)</td></tr>
+<tr><td>Câble de guidage</td><td>H cadre réa − 35 − 440 + 400 (boîte à coin), arrondi à la centaine supérieure</td><td><b>20 600 mm</b><br>(20 568 avant arrondi)</td></tr></table>
+<p class="legend">Diamètre primitif de la poulie : 582 mm. <span class="tag c">Confirmé</span></p>
+<div class="rule"><b>Contrôle :</b> le jeu entre cadre de réa et contrepoids doit être positif. Le classeur précise : « si négatif, le CP ne rentre pas dans la cage ». <span class="tag c">Confirmé</span></div>
+<div class="todo"><b>À valider</b> : sur NEXT, ce jeu vaut −280 mm. Erreur de saisie, cas particulier accepté ou formule à revoir ?</div>
+<h3>Chaîne porte-câbles (CPC)</h3>
+<p>Longueur théorique = course verticale / 2 + π·R + rehausse (200) + longueur supplémentaire (300). Nombre de maillons = longueur théorique / pas (91 mm), arrondi au supérieur. NEXT : course 18 150 mm → 10 800 mm théoriques → <b>119 maillons, 10 829 mm</b>. Le classeur vérifie aussi l'interférence de la plaque avec la traverse. <span class="tag c">Confirmé</span></p>
+<h3>Lancement des crémaillères</h3>
+<table><tr><th style="width:36mm">Étape</th><th>Règle</th><th style="width:42mm">NEXT</th></tr>
+<tr><td>Longueur pratique</td><td>hauteur de cage − 79,5 − 72,5 − 50</td><td>20 441 mm</td></tr>
+<tr><td>Crémaillères de 3000 (710241)</td><td>partie entière de (longueur pratique / 3000), plus un morceau pour le reste</td><td>6 + morceau de 2 020 mm</td></tr>
+<tr><td>Pistes</td><td>1 piste de 2250 (710238, −60 mm en bas) + pistes de 3000 + morceau</td><td>1 × 2250 + 5 × 3000 + 2 770</td></tr>
+<tr><td>Profils de 6000 (440109)</td><td>longueur du profil = longueur de crémaillère</td><td>3 profils + morceau de 2 020 mm</td></tr>
+<tr><td>Visserie</td><td>plaques de jonction et goupilles : nombre de crémaillères ; vis CHC M12×35 : 9 par crémaillère</td><td>6 plaques, 63 vis, 57 rondelles épaisses</td></tr>
+<tr><td>Conditionnement</td><td>tronçons de 12 m ; caissons d'extrémité 703450 et central 703449 ; pointes 375000</td><td>2 + 3 caissons, 24 pointes</td></tr></table>
+</section>
+
+<section class="page">
+<h2 data-toc2="5.4">5.4 Niveaux et interface nacelle / rayonnage / convoyeur</h2>
+<figure><img src="figures/transfert_tor.png" style="max-height:42mm"><figcaption>Coupe de transfert : palette sur rayonnage à gauche, palette sur convoyeur à droite (simple profondeur, fourches avec élévation).</figcaption></figure>
+<table><tr><th>Grandeur</th><th>Valeur</th><th style="width:22mm">Niveau</th></tr>
+<tr><td>Niveau d'appui de la palette sur convoyeur</td><td>TOR 450 mm</td><td><span class="tag c">Confirmé</span></td></tr>
+<tr><td>Niveau d'appui en position de chargement du rayonnage</td><td>TOR 300 mm</td><td><span class="tag c">Confirmé</span></td></tr>
+<tr><td>Course des fourches</td><td>380 mm en position basse, 630 mm en position haute</td><td><span class="tag c">Confirmé</span></td></tr>
+<tr><td>Entraxe nacelle / palette, de chaque côté</td><td>1 600 mm</td><td><span class="tag c">Confirmé</span></td></tr>
+<tr><td>Largeur de la nacelle entre charges</td><td>1 500 mm</td><td><span class="tag c">Confirmé</span></td></tr></table>
+<h3>Repères automate (onglet « Registres_automates », déduits de la feuille « Niveaux »)</h3>
+<table><tr><th>Repère</th><th>Valeur (NEXT)</th></tr>
+<tr><td>Pas d'étage</td><td>1 850 mm</td></tr>
+<tr><td>Premier niveau palettier</td><td>1 050 mm</td></tr>
+<tr><td>Niveaux batterie</td><td>premier à 1 194,5 mm, puis tous les 2 000 mm</td></tr>
+<tr><td>Niveau convoyeur 1</td><td>1 090 mm</td></tr></table>
+<div class="todo"><b>À compléter</b> : tolérances d'alignement entre nacelle, lisses du rayonnage et convoyeurs ; règles sur le pas des allées (entraxe, jeux VM / rayonnage). Thèmes demandés par le plan d'action, absents des sources.</div>
+
+<h2 data-toc2="5.5">5.5 Convoyeurs de cage et motoréducteurs</h2>
+<p>Le Bilan P&amp;G recense les fournisseurs des convoyeurs de Levmatic par affaire. Certains n'ont laissé aucune donnée, ce qui complique les remplacements. <span class="tag c">Confirmé</span></p>
+<table><tr><th>Site</th><th>Affaire</th><th>Levmatic</th><th>Fournisseur</th><th>Données disponibles</th></tr>
+<tr><td>Londres</td><td>PGLO0</td><td>1, 2, 4, 5, 7, 8</td><td>Schulz</td><td>Aucune</td></tr>
+<tr><td>Londres</td><td>B6082</td><td>11, 12, 14</td><td>Matrex</td><td>Aucune</td></tr>
+<tr><td>Mechelen</td><td>10451</td><td>1 à 6</td><td>Schulz</td><td>Aucune</td></tr>
+<tr><td>Amiens</td><td>30144</td><td>A, E, K</td><td>Matrex</td><td>Motoréducteur à frein SEW R37 DT80</td></tr>
+<tr><td>Jijona</td><td>24206</td><td>6</td><td>Citex</td><td>Aucune</td></tr>
+<tr><td>Euskirchen</td><td>EHP0000488</td><td>5</td><td>Matrex</td><td>SEW R37DRN80MK4BE1HR, 74 tr/min ; plan Matrex</td></tr></table>
+<div class="rule"><b>Règle proposée :</b> à chaque affaire, archiver le plan et la référence du motoréducteur du convoyeur de cage dans le dossier de l'affaire. <span class="tag d">Déduit</span></div>
+</section>
+
+<section class="page">
+<h2 data-toc2="5.6">5.6 Voies de roulement des Levmatic</h2>
+<p>Des fissures ont été constatées sur les voies de roulement. Elles sont remplacées par des voies qui ne créent pas de sur-contraintes. Les pièces d'origine sont remplacées par des sous-ensembles : <span class="tag c">Confirmé</span></p>
+<table><tr><th>Pièces d'origine</th><th>Nouveau sous-ensemble</th><th>Sites concernés</th></tr>
+<tr><td>711108 – 711110</td><td>005561 (711462 et 711463)</td><td>Londres (Lev 3 et 6)</td></tr>
+<tr><td>710892 – 710893</td><td>005563 (711466 et 711467)</td><td>Londres, Mechelen, Amiens, Euskirchen (aucun à Jijona)</td></tr>
+<tr><td>711591 – 711594</td><td>005560 (711438 et 711439)</td><td>Euskirchen (Lev 13, 14 et 16)</td></tr></table>
+<div class="rule"><b>Règle proposée :</b> toute nouvelle cage reçoit les sous-ensembles de voie nouvelle génération (005560, 005561 ou 005563). <span class="tag d">Déduit</span></div>
+<div class="todo"><b>À compléter</b> : cause de la fissuration, critère de choix entre les trois sous-ensembles, conditions de dimensionnement.</div>
+
+<h2 data-toc2="5.7">5.7 Véhicules motorisés (VM)</h2>
+<ul><li>Poids d'un VM : 1 550 kg (cage NEXT). <span class="tag c">Confirmé</span></li>
+<li>Hauteur de VM prise dans le calcul de cage : 1 920 mm en ambiance chaude, 1 750 mm en ambiance froide, batterie en haut. <span class="tag c">Confirmé</span></li>
+<li>Deux types de moteur coexistent : DY (origine) et CMP (après migration ; affaires N0212 + E1146 et BJ020 à Londres). <span class="tag c">Confirmé</span></li>
+<li>Deux chariots existent dans les modèles CAO : « chariot VX » et « chariot VY ». <span class="tag c">Confirmé</span></li></ul>
+<div class="todo"><b>À compléter</b> : règle de choix du moteur, limites de charge, gabarit complet d'un VM. Source possible : parc VM du Bilan P&amp;G (128 lignes).</div>
+
+<h2 data-toc2="5.8">5.8 Sécurité</h2>
+<p>Sur chaque site P&amp;G, la sécurité des Levmatic a été reprise après coup par des affaires qui se répètent : <span class="tag c">Confirmé</span></p>
+<table><tr><th style="width:52mm">Sujet</th><th>Affaires relevées</th></tr>
+<tr><td>Portes coulissantes de voie X</td><td>Londres BE050 ; Mechelen BE022 (proto, Lev 1) puis BE048 (Lev 2 à 6) ; Amiens BE044 (11 Lev) ; Jijona BE046 (Lev 1 à 4) ; Euskirchen BE042 (7 Lev)</td></tr>
+<tr><td>Sécurité phase 1 : équipement de palette cage</td><td>Londres BC070, Mechelen BC084, Amiens BC072, Jijona BC082, Euskirchen BC068</td></tr>
+<tr><td>Sécurité phase 2 (« Bucket 2 ») : détection de déformation de rail</td><td>BE012, BE010, BE016, BE014, BE008</td></tr>
+<tr><td>Obsolescences (« Bucket 3 »)</td><td>BH006, BH002, BH004, BH010, BH008</td></tr>
+<tr><td>Sécurisation de la butée d'entrée de palettes (capteur)</td><td>EHP0000691, EHP0000871, EHP0000987</td></tr></table>
+<div class="rule"><b>Règle proposée :</b> une nouvelle cage intègre d'origine les portes de voie X, la palette cage, la détection de déformation de rail et le capteur de butée d'entrée. <span class="tag d">Déduit</span></div>
+
+<h2 data-toc2="5.9">5.9 Chargeurs de batteries et lecteurs de balises</h2>
+<ul><li>Chargeurs : migration avec support de chargeur Enersys (Londres BE032, Mechelen BD028, Amiens BE038, Jijona BE026, Euskirchen BE024 et BF002) ; ajout de 2 chargeurs à Mechelen (BG028). <span class="tag c">Confirmé</span></li>
+<li>Lecteur de balises : antenne Nedap (Mechelen BG022), migrations BG026 et BG030. <span class="tag c">Confirmé</span></li></ul>
+</section>
+
+<!-- ============ 6 PLANS ET NOMMAGE ============ -->
+<section class="page">
+<div class="banner" data-toc="6">6. Plans d'implantation et nommage</div>
+<h2 data-toc2="6.1">6.1 Règles de mise en plan (standard BEMI)</h2>
+<p>La présentation « Uniformisation des plans implantation BEMI » fixe les règles pour les plans SolidWorks gérés dans le PDM. Elle a été écrite pour les convoyeurs ; son application aux plans Magmatic est à confirmer. <span class="tag c">Confirmé</span></p>
+<div class="cols">
+<figure><img src="figures/bemi_zones.png"><figcaption>Découpage en zones : plan « client » et plan « technique ».</figcaption></figure>
+<figure><img src="figures/bemi_couleurs.png"><figcaption>Code couleur général.</figcaption></figure>
+</div>
+<table><tr><th style="width:38mm">Thème</th><th>Règle</th></tr>
+<tr><td>Découpage</td><td>Définir zones et sous-zones au début du projet. Chaque zone a au moins 2 plans : « client » (cotes de passage, arrêts d'urgence, éléments d'interface) et « technique » (cotes de départ, bullage, annotations).</td></tr>
+<tr><td>Lancement</td><td><b>Pas de lancement par sous-zone.</b> La nomenclature de lancement est celle de la zone entière. <b>Pas de folios multiples</b> dans un fichier de plan.</td></tr>
+<tr><td>Vues</td><td>Échelle 1:50 mini. Au moins 3 vues : dessus, côté (élévation), isométrique. Sol en bas sur les vues de côté ; pas de vue de dessous ; vues de dessus toutes dans le même sens. Vue globale de l'installation dans un coin, zone mise en valeur.</td></tr>
+<tr><td>Rouge</td><td>Cote importante (position, écart à respecter, passage), spécificité ou modification sur site, bulle d'arrêt d'urgence.</td></tr>
+<tr><td>Bleu</td><td>Cote fonctionnelle (référence bâtiment, entraxes, coupes théoriques), bulle IHM (boutons, verrines).</td></tr>
+<tr><td>Vert</td><td>Identification d'éléments, information, bulle de pieds et supportage.</td></tr>
+<tr><td>Bullage</td><td>Sur la vue de dessus, lignes de rappel sans croisement, nomenclature triée par n° de plan, sur les plans « technique » uniquement.</td></tr>
+<tr><td>Liens PDM</td><td><b>Ne jamais appeler une pièce d'une autre affaire dans un plan d'ensemble</b> : cela crée des liens entre affaires dans le PDM.</td></tr>
+<tr><td>Enregistrement</td><td>Avant archivage : vue de dessus, zoom tout, régénérer, sauver.</td></tr></table>
+<div class="todo"><b>À valider</b> : ces règles s'appliquent-elles telles quelles aux plans de cage et d'implantation Magmatic (phase 3 du plan d'action : standards de cotation, vues, cartouches, nomenclatures) ?</div>
+</section>
+
+<section class="page">
+<h2 data-toc2="6.2">6.2 Nommage des documents (BEEM)</h2>
+<figure><img src="figures/nommage_exemple.png"><figcaption>Structure d'un nom de document : 9 champs.</figcaption></figure>
+<table><tr><th style="width:8mm">N°</th><th style="width:38mm">Champ</th><th>Valeurs utiles pour Magmatic</th></tr>
+<tr><td>1</td><td>N° d'affaire</td><td>3 lettres + 7 chiffres (ex. EHP0000488)</td></tr>
+<tr><td>2</td><td>Service</td><td>A BEA ; B BEEM ; E BEE ; H HSE ; I INS ; M BMI ; W BEI</td></tr>
+<tr><td>3</td><td>Type de document</td><td>IG plan d'implantation général ; IM plan d'implantation ; EN implantation point énergie ; EP épure ; PS plans spécifiques ; NO nomenclature ; NC note de calcul ; CG bilan des charges ; MM méthode de montage ; ZO zonage ; RP repères automate ; AB tel que construit</td></tr>
+<tr><td>4</td><td>Famille de produit</td><td><b>MAG</b> Magmatic (autres : INT Intelis, PTS X-PTS, MAN Manut 2000, SEC sécurité, NRJ énergie)</td></tr>
+<tr><td>5</td><td>Produit</td><td>ALV armoire élévateur Levmatic ; VMA véhicule Magmatic ; BAT batterie VM ; HAC chargeur ; ACH armoire chargeur ; AMA armoire mât à palette ; PCA palette cage ; RAC rack ; STR structure ; CON convoyeurs ; PCF porte coupe-feu ; PGR protection grillagée ; SEC sécurité</td></tr>
+<tr><td>6</td><td>Incrément</td><td>Distingue les documents par zone, n° d'allée, n° de machine</td></tr>
+<tr><td>7</td><td>Langue</td><td>FR, EN, DE, ES, FA (français / anglais)…</td></tr>
+<tr><td>8</td><td>Désignation libre</td><td></td></tr>
+<tr><td>9</td><td>Indice</td><td>01, 02…</td></tr></table>
+<p class="legend">Source : classeur « BEEM - Nommage des documents ». <span class="tag c">Confirmé</span></p>
+<figure><img src="figures/nommage_tables.png" style="max-height:56mm"><figcaption>Tables de codes du classeur de nommage.</figcaption></figure>
+<div class="todo"><b>À valider</b> : code service du BE mécanique pour Magmatic (B, E ou M) ; il manque un code produit explicite pour la cage Levmatic (ALV désigne l'armoire).</div>
+<h2 data-toc2="6.3">6.3 Numéros d'affaire</h2>
+<p>Sur les 120 affaires du Bilan P&amp;G, 25 seulement sont au format BEEM. Les autres suivent des formats plus anciens (B5068, BE012, 30144…). <span class="tag c">Confirmé</span></p>
+<div class="rule"><b>Règle proposée :</b> toute nouvelle affaire Magmatic est numérotée au format BEEM. L'ancien numéro reste noté dans l'historique des affaires pour retrouver les plans. <span class="tag d">Déduit</span></div>
+</section>
+
+<!-- ============ 7 ADAPTATION ============ -->
+<section class="page">
+<div class="banner" data-toc="7">7. Adaptation aux anciens sites</div>
+<p>Les sites P&amp;G montrent les mêmes opérations d'adaptation sur du matériel de générations différentes. <span class="tag c">Confirmé</span></p>
+<table><tr><th style="width:40mm">Opération</th><th>Contenu relevé</th><th style="width:52mm">Exemples d'affaires</th></tr>
+<tr><td>Rétrofit Levmatic</td><td>Moteurs et variateurs, configuration SEW, armoire, partie fixe, capteurs, nacelle, convoyeurs</td><td>E3750, E3754, E3748 ; EHP0000488, EHP0000499, EHP0000527</td></tr>
+<tr><td>Rétrofit VM</td><td>Changement de moteur et de platine ; remplacement par des VM neufs</td><td>E3756, E3758, E3760 ; EHP0000512, EHP0000528</td></tr>
+<tr><td>Remplacement des nacelles</td><td>Nacelles de plusieurs Levmatic par site</td><td>ASO0000080 (Lev 2, 5, 7), ASO0000078 (C, D, F), ASO0000079 (4, 6, 8, 9)</td></tr>
+<tr><td>Relais de convoyeurs</td><td>Remplacement des relais par des variateurs, chaînes porte-câbles</td><td>ASO0000071 à ASO0000075</td></tr>
+<tr><td>Voies de roulement</td><td>Remplacement par sous-ensembles nouvelle génération (§ 5.6)</td><td>Calendrier 2026-2027</td></tr>
+<tr><td>Extension de site</td><td>Ajout de VM ou de Levmatic sur un site existant</td><td>Londres : B6082, BB002, BD060, BE082, E0138, E0398 ; Next : BJ010</td></tr></table>
+<h2>Ancienne et nouvelle cage sur un même site</h2>
+<p>Le dossier NEXT contient les deux générations : la cage d'origine « NEXL1 » (plan A00622, 2006-2009) et la cage de l'extension EHP01718 (Levmatic 6 et 8, fichiers de 2026). Les fichiers de l'extension reprennent le code composant 081000 et ajoutent le numéro d'affaire. <span class="tag c">Confirmé</span></p>
+<div class="rule"><b>Règle proposée :</b> pour une extension, repartir des modèles de la cage existante du site, les copier sous le nouveau numéro d'affaire, puis recalculer les quantités avec le classeur de lancement. Ne pas modifier les fichiers de l'affaire d'origine. <span class="tag d">Déduit</span></div>
+<div class="todo"><b>À compléter</b> : équivalences entre références anciennes et nouvelles, interfaces à vérifier lors d'un rétrofit, règles de conservation des anciennes pièces au catalogue.</div>
+
+</section>
+
+<section class="page">
+<div class="banner" data-toc="A">Annexe : points à valider avec le tuteur</div>
+<table><tr><th style="width:8mm">N°</th><th>Point à valider</th><th style="width:20mm">Chapitre</th></tr>
+<tr><td>1</td><td>Définition des types de Magmatic (1, 2, 2A, 2C) et sens de « chaud / froid »</td><td>2, 3.4</td></tr>
+<tr><td>2</td><td>Débordement de charge (2 × 100 mm) et gabarit réel de la charge ; hauteurs 1500 / 1800</td><td>3.1</td></tr>
+<tr><td>3</td><td>Poids du Levmatic : 1 500 ou 1 960 kg</td><td>3.2</td></tr>
+<tr><td>4</td><td>Calcul des contrepoids : formule, choix béton / acier, déséquilibre admissible, erreur #NAME?</td><td>3.5</td></tr>
+<tr><td>5</td><td>Jeu cadre de réa / contrepoids négatif (−280 mm) sur NEXT</td><td>5.3</td></tr>
+<tr><td>6</td><td>Quantités de lancement fixes ou liées au site ; sens du sigle TOR</td><td>5.2, 5.4</td></tr>
+<tr><td>7</td><td>Implantation des Levmatic, pas des allées, tolérances d'interface</td><td>5.1, 5.4</td></tr>
+<tr><td>8</td><td>Cause de la fissuration des voies de roulement et critère de choix</td><td>5.6</td></tr>
+<tr><td>9</td><td>Sécurités à intégrer d'origine dans une nouvelle cage</td><td>5.8</td></tr>
+<tr><td>10</td><td>Application des règles de mise en plan BEMI à Magmatic ; code service BEEM</td><td>6.1, 6.2</td></tr>
+<tr><td>11</td><td>Lecture d'un plan : calques, cartouche, numérotation des allées</td><td>4</td></tr></table>
+<p class="legend">Une fois ces points validés, chaque règle « déduite » passe à « confirmée » et les chapitres « à compléter » sont rédigés à partir des plans de sites réels (version V2 du plan d'action, phase 5).</p>
+</section>
+
+<script>
+(function(){
+  var pages=[].slice.call(document.querySelectorAll('.page'));
+  var toc=document.getElementById('toc'), html='';
+  pages.forEach(function(p,i){
+    var n=i+1;
+    p.insertAdjacentHTML('afterbegin','<div class="top"></div><div class="bot"></div>');
+    if(!p.hasAttribute('data-nofoot'))
+      p.insertAdjacentHTML('beforeend','<div class="foot"><span>Magmatic — Principes généraux et règles de conception — Ind B (brouillon)</span><span>'+n+'</span></div>');
+    [].forEach.call(p.querySelectorAll('[data-toc],[data-toc2]'),function(e){
+      var l2=e.hasAttribute('data-toc2');
+      html+='<div class="'+(l2?'l2':'')+'"><span>'+e.textContent+'</span><span>'+n+'</span></div>';
+    });
+  });
+  toc.innerHTML=html;
+  // controle de debordement (visible a l'ecran uniquement)
+  // controle : marge restante (mm) avant le pied de page ; negatif = debordement
+  window.addEventListener('load',function(){
+    var r=pages.map(function(p,i){
+      var last=0;[].forEach.call(p.children,function(c){ if(!/top|bot|foot|cap/.test(c.className)&&!(p.classList.contains('cover')&&c.tagName=='IMG')){var b=c.offsetTop+c.offsetHeight; if(b>last) last=b;} });
+      var f=p.querySelector('.foot'); var lim=f?f.offsetTop:p.clientHeight;
+      return (i+1)+':'+Math.round((lim-last)/3.78);
+    });
+    document.body.setAttribute('data-reste-mm',r.join(' '));
+  });
+})();
+</script>
+</body></html>
